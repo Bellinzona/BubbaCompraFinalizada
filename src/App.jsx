@@ -5,7 +5,10 @@ import './App.css'
 
 function App() {
   const [paymentInfo, setPaymentInfo] = useState(null);
+  const [pagoId, setPagoId] = useState("")
   useEffect(() => {
+   
+    
 
     fetch(`https://bs-i4ni.onrender.com/CompraFinalizada`)
       .then(response => response.json())
@@ -17,6 +20,14 @@ function App() {
   }, []);
 
   useEffect(() => {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const collectionStatus = urlParams.get('collection_status');
+    const paymentId = urlParams.get('payment_id');
+
+    setPagoId(paymentId)
+
+
     const guardarInformacion = async () => {
       if (paymentInfo && paymentInfo.RequestBodyInfo) {
         const clienteData = {
@@ -26,7 +37,7 @@ function App() {
           Local: paymentInfo.RequestBodyInfo.local,
           Horario: paymentInfo.RequestBodyInfo.horario,
           telefono: paymentInfo.RequestBodyInfo.telefono,
-          IdCompra: paymentInfo.QueryParams.payment_id
+          IdCompra: paymentId
         };
   
         try {
@@ -46,6 +57,8 @@ function App() {
     guardarInformacion();
   }, [paymentInfo]);
 
+
+
   return (
     <div className='CompraFinalizada'>
 
@@ -59,7 +72,7 @@ function App() {
         <p>Producto: {paymentInfo?.RequestBodyInfo?.description ?? 'No disponible'} ${paymentInfo?.RequestBodyInfo?.price ?? 'No disponible'}</p>
         <p>Local: {paymentInfo?.RequestBodyInfo?.local ?? 'No disponible'}</p>
         <p>{paymentInfo?.RequestBodyInfo?.horario ?? 'No disponible'}</p>
-        <p>Id de la compra: {paymentInfo?.QueryParams?.payment_id ?? 'No disponible'}</p>
+        <p>Id de la compra: {pagoId ?? 'No disponible'}</p>
 
       </>
     )}
